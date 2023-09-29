@@ -49,7 +49,7 @@ module.exports.findOne = async (req, res, next) => {
         const document = await contactService.findById(req.params.id)
         if (!document) {
             return next(
-                new ApiError(400, "Contact not found!")
+                new ApiError(404, "Contact not found!")
             )
         }
         return res.send(document)
@@ -61,8 +61,29 @@ module.exports.findOne = async (req, res, next) => {
     }
 }
 
-module.exports.update = (req, res) => {
-    res.send({ message: 'update handler' })
+module.exports.update = async (req, res, next) => {
+    if (Object.keys(req.body).length === 0) {
+        return next(new ApiError(400, "Data update cannot be empty"))
+    }
+
+    try {
+        const contactService = new ContactService(MongoDB.client)
+        const document = await contactService.update(req.params.id, req.body)
+        
+        if (!document) {
+            return next(new ApiError(404, "Contact not found"))
+        }
+
+        res.send({
+            message: "Contact was updated successfully",
+            updatedDocument: document
+        })
+    }
+    catch (err) {
+        return next(
+            new ApiError(500, `Error retrieving contact with id: ${req.params.id}`)
+        )
+    }
 }
 
 module.exports.delete = (req, res) => {

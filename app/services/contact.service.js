@@ -49,7 +49,19 @@ class ContactService {
         })
     }
 
-    
+    async update(id, document) {
+        const filter = {
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null
+        }
+        const contact = this.extractContactData(document)
+        const result = await this.Contact.findOneAndUpdate(
+            filter,
+            { $set: contact },
+            { returnDocument: "after" }
+        )
+        
+        return result
+    }
 }
 
 module.exports = ContactService
