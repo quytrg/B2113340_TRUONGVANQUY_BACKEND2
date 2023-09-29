@@ -72,6 +72,13 @@ class ContactService {
     async findFavorite() {
         return await this.find({ favorite: true })
     }
+
+    async deleteAll() {
+        const result = await this.Contact.deleteMany({})
+        return result.deletedCount
+    }
+
+    
 }
 
 module.exports = ContactService
