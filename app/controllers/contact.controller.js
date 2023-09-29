@@ -104,14 +104,22 @@ module.exports.delete = async (req, res, next) => {
             new ApiError(500, `Could not delete contact with id: ${req.params.id}`)
         )
     }
-    
-    
 }
 
 module.exports.deleteAll = (req, res) => {
     res.send({ message: 'deleteAll handler' })
 }
 
-module.exports.findAllFavorite = (req, res) => {
-    res.send({ message: 'findAllFavorite handler' })
+module.exports.findAllFavorite = async (req, res, next) => {
+    try {
+        const contactService = new ContactService(MongoDB.client)
+        const documents = await contactService.findFavorite()
+       
+        res.send(documents)
+    }
+    catch(err) {
+        return next(
+            new ApiError(500, "An error occurred while retrieving favorite contacts")
+        )
+    }
 }
